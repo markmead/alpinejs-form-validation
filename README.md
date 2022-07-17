@@ -34,9 +34,9 @@
   <div
     x-data="{ min: false, max: false }"
     x-on:error="
-          min = !$json($event.detail).minLength
-          max = !$json($event.detail).maxLength
-        "
+      min = !$json($event.detail).minLength
+      max = !$json($event.detail).maxLength
+    "
   >
     <textarea
       x-model="bio"
@@ -66,15 +66,11 @@
 </form>
 ```
 
-```css
-input,
-textarea {
-  border: solid 2px;
-  outline: solid 2px transparent;
-  display: block;
-  margin-bottom: 1rem;
-}
+### Styling
 
+You can style inputs with the the following HTML attribute.
+
+```css
 [x-validation-valid='false'] {
   outline-color: red;
 }
