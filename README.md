@@ -1,10 +1,10 @@
 # Alpine JS Form Validation
 
-✅ Alpine JS plugin that prevents your form getting unwanted submissions through the use of an image puzzle
+Adds client side form/input validation powered by Alpine JS directives ✅
 
 ### [Try it out on CodePen](https://codepen.io/markmead/full/zYWNmwZ)
 
-## Example 👀
+## Example
 
 ```html
 <form x-data="{ name: '', age: '', bio: '', awesome: '' }">
@@ -80,7 +80,7 @@ You can style inputs with the the following HTML attribute.
 }
 ```
 
-## Install 🌟
+## Install
 
 It's very easy to install Alpine JS plugins! 🙌
 
@@ -116,7 +116,7 @@ window.Alpine = Alpine
 Alpine.start()
 ```
 
-### Stats 📊
+### Stats
 
 ![](https://img.shields.io/bundlephobia/min/alpinejs-form-validation)
 ![](https://img.shields.io/npm/v/alpinejs-form-validation)

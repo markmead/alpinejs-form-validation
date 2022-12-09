@@ -1,5 +1,3 @@
 import validation from '../src/index.js'
 
-document.addEventListener('alpine:init', () => {
-  window.Alpine.plugin(validation)
-})
+document.addEventListener('alpine:init', () => window.Alpine.plugin(validation))

@@ -1,23 +1,23 @@
 {
   "name": "alpinejs-form-validation",
-  "version": "1.0.1",
-  "description": "✅ Alpine JS plugin that adds client side form/input validation without custom JavaScript",
+  "version": "1.0.2",
+  "description": "Adds client side form/input validation powered by Alpine JS directives ✅",
   "keywords": [
     "Alpine",
     "Alpine JS",
     "Alpine JS Plugins",
-    "Alpine JS Form Validator",
-    "Alpine JS Form Validation"
+    "Alpine JS Form Validation",
+    "JavaScript Validation",
+    "Form Validation"
   ],
   "author": "Mark Mead",
   "license": "MIT",
-  "main": "dist/validation.cjs.js",
   "module": "dist/validation.esm.js",
   "unpkg": "dist/validation.min.js",
   "scripts": {
     "build": "node scripts/build.js"
   },
   "devDependencies": {
-    "esbuild": "^0.12.22"
+    "esbuild": "^0.16.2"
   }
 }
