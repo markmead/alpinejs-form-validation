@@ -2,8 +2,6 @@
 
 Adds client side form/input validation powered by Alpine JS ✅
 
-### [Try it out on CodePen](https://codepen.io/markmead/full/zYWNmwZ)
-
 ## Example
 
 ```html
