@@ -8,7 +8,7 @@ Adds client side form/input validation powered by Alpine JS ✅
 <form x-data="{ name: '', age: '', bio: '', awesome: '' }">
   <div
     x-data="{ required: false }"
-    x-on:error="required = !$json($event.detail).required"
+    x-on:error="required = $valid($event.detail, 'required')"
   >
     <input type="text" x-model="name" x-validation.required="name" />
 
@@ -18,8 +18,8 @@ Adds client side form/input validation powered by Alpine JS ✅
   <div
     x-data="{ min: false, max: false }"
     x-on:error="
-      min = !$json($event.detail).min
-      max = !$json($event.detail).max
+      min = $valid($event.detail, 'min')
+      max = $valid($event.detail, 'max')
     "
   >
     <input type="number" x-model="age" x-validation.min.18.max.24="age" />
@@ -32,8 +32,8 @@ Adds client side form/input validation powered by Alpine JS ✅
   <div
     x-data="{ min: false, max: false }"
     x-on:error="
-      min = !$json($event.detail).minLength
-      max = !$json($event.detail).maxLength
+      min = $valid($event.detail, 'minLength')
+      max = $valid($event.detail, 'maxLength')
     "
   >
     <textarea
@@ -48,7 +48,7 @@ Adds client side form/input validation powered by Alpine JS ✅
 
   <div
     x-data="{ checked: false }"
-    x-on:error="checked = !$json($event.detail).checked"
+    x-on:error="checked = $valid($event.detail, 'checked')"
   >
     <input
       type="checkbox"

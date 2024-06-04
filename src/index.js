@@ -2,9 +2,9 @@ export default function (Alpine) {
   Alpine.directive(
     'validation',
     (el, { modifiers, expression }, { evaluateLater, effect }) => {
-      let getInputValue = evaluateLater(expression)
+      const getInputValue = evaluateLater(expression)
 
-      let getModifierItem = (key) =>
+      const getModifierItem = (key) =>
         modifiers.filter((modifier) => modifier === key)[0] ?? false
 
       let validationOptions = {}
@@ -14,25 +14,25 @@ export default function (Alpine) {
       }
 
       if (getModifierItem('min')) {
-        let modifierIndex = modifiers.indexOf(getModifierItem('min'))
+        const modifierIndex = modifiers.indexOf(getModifierItem('min'))
 
         validationOptions.min = Number(modifiers[modifierIndex + 1])
       }
 
       if (getModifierItem('max')) {
-        let modifierIndex = modifiers.indexOf(getModifierItem('max'))
+        const modifierIndex = modifiers.indexOf(getModifierItem('max'))
 
         validationOptions.max = Number(modifiers[modifierIndex + 1])
       }
 
       if (getModifierItem('min:length')) {
-        let modifierIndex = modifiers.indexOf(getModifierItem('min:length'))
+        const modifierIndex = modifiers.indexOf(getModifierItem('min:length'))
 
         validationOptions.minLength = Number(modifiers[modifierIndex + 1])
       }
 
       if (getModifierItem('max:length')) {
-        let modifierIndex = modifiers.indexOf(getModifierItem('max:length'))
+        const modifierIndex = modifiers.indexOf(getModifierItem('max:length'))
 
         validationOptions.maxLength = Number(modifiers[modifierIndex + 1])
       }
@@ -43,6 +43,8 @@ export default function (Alpine) {
 
       effect(() => {
         getInputValue((inputValue) => {
+          // We don't check validation if there is no input value,
+          // or if the input has not been interacted with
           if (!inputValue && !el.getAttribute('x-validation-dirty')) {
             return
           }
@@ -75,12 +77,11 @@ export default function (Alpine) {
             validationStatus.checked = inputValue ? true : false
           }
 
-          let inputValid = Object.values(validationStatus).every(
+          const inputValid = Object.values(validationStatus).every(
             (validation) => validation
           )
 
           el.setAttribute('x-validation-dirty', true)
-
           el.setAttribute('x-validation-valid', inputValid)
 
           el.setAttribute(
@@ -105,7 +106,5 @@ export default function (Alpine) {
     }
   )
 
-  Alpine.magic('json', () => (json) => {
-    return JSON.parse(json)
-  })
+  Alpine.magic('valid', () => (json, key) => !JSON.parse(json)[key])
 }
