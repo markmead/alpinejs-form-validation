@@ -5,7 +5,9 @@ export function checkInput(
   evaluateLater,
   ignoreDirty = false
 ) {
-  const getModifier = (key) => modifiers.find((mod) => mod === key) ?? false
+  const getModifier = (modKey) =>
+    modifiers.find((modItem) => modItem === modKey) ?? false
+
   const getErrors = evaluateLater(expression)
 
   let validationOptions = {}
@@ -42,55 +44,57 @@ export function checkInput(
     validationOptions.checked = true
   }
 
-  getErrors((value) => {
+  getErrors((inputValue) => {
     // We don't check validation if there is no input value,
     // or if the input has not been interacted with
-    if (!ignoreDirty && !value && !el.getAttribute('data-validation-dirty')) {
+    if (
+      !ignoreDirty &&
+      !inputValue &&
+      !el.getAttribute('data-validation-dirty')
+    ) {
       return
     }
 
     let validationStatus = {}
 
     if (getModifier('required')) {
-      validationStatus.required = !!value
+      validationStatus.required = !!inputValue
     }
 
     if (getModifier('min')) {
-      validationStatus.min = value >= validationOptions.min
+      validationStatus.min = inputValue >= validationOptions.min
     }
 
     if (getModifier('max')) {
-      validationStatus.max = value <= validationOptions.max
+      validationStatus.max = inputValue <= validationOptions.max
     }
 
     if (getModifier('min:length')) {
-      validationStatus.minLength = value.length >= validationOptions.minLength
+      validationStatus.minLength =
+        inputValue.length >= validationOptions.minLength
     }
 
     if (getModifier('max:length')) {
-      validationStatus.maxLength = value.length <= validationOptions.maxLength
+      validationStatus.maxLength =
+        inputValue.length <= validationOptions.maxLength
     }
 
     if (getModifier('checked')) {
-      validationStatus.checked = !!value
+      validationStatus.checked = !!inputValue
     }
 
-    const isValid = Object.values(validationStatus).every((valid) => valid)
+    const isValid = Object.values(validationStatus).every((isValid) => isValid)
+    const errorKey = Object.keys(validationStatus).find(
+      (validationKey) => validationStatus[validationKey] === false
+    )
 
     el.setAttribute('data-validation-dirty', true)
     el.setAttribute('data-validation-valid', isValid)
+    el.setAttribute('data-validation-reason', errorKey || '')
     el.setAttribute('data-validation-status', JSON.stringify(validationStatus))
     el.setAttribute(
       'data-validation-options',
       JSON.stringify(validationOptions)
-    )
-
-    el.dispatchEvent(
-      new CustomEvent('error', {
-        bubbles: true,
-        cancelable: true,
-        detail: JSON.stringify(validationStatus),
-      })
     )
   })
 }

@@ -12,7 +12,7 @@ Add client side form validation with Alpine JS 🎉
   src="https://unpkg.com/alpinejs-form-validation@latest/dist/validation.min.js"
 ></script>
 
-<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<script defer src="https://unpkg.com/alpinejs@latest/dist/cdn.min.js"></script>
 ```
 
 ### With a Package Manager
@@ -34,18 +34,15 @@ Alpine.start()
 
 ## Example
 
-_This example uses Tailwind CSS for styling but that is not mandatory._
+_This example uses Tailwind CSS for styling but that is not required._
 
 ```html
 <form
-  @submit.prevent="$dispatch('validate')"
   x-data="{ contactName: '', contactAge: '', contactMessage: '', contactTerms: false }"
   class="max-w-xl mx-auto space-y-4"
+  @submit.prevent="$dispatch('validate')"
 >
-  <div
-    x-data="{ required: false }"
-    @error="required = $valid($event.detail, 'required')"
-  >
+  <div class="group">
     <label for="contactName" class="font-medium"> Name </label>
 
     <input
@@ -56,18 +53,14 @@ _This example uses Tailwind CSS for styling but that is not mandatory._
       class="w-full mt-1 rounded data-[validation-valid=true]:border-green-500 data-[validation-valid=false]:border-red-500"
     />
 
-    <small x-cloak x-show="required" class="text-red-600 mt-1 block">
+    <small
+      class="text-red-600 mt-1 hidden group-has-[[data-validation-valid=false]]:block"
+    >
       Need a name
     </small>
   </div>
 
-  <div
-    x-data="{ minAge: false, maxAge: false }"
-    @error="
-      minAge = $valid($event.detail, 'min')
-      maxAge = $valid($event.detail, 'max')
-    "
-  >
+  <div class="group">
     <label for="contactAge" class="font-medium"> Age </label>
 
     <input
@@ -78,22 +71,20 @@ _This example uses Tailwind CSS for styling but that is not mandatory._
       class="w-full rounded mt-1 data-[validation-valid=true]:border-green-500 data-[validation-valid=false]:border-red-500"
     />
 
-    <small x-cloak x-show="minAge" class="text-red-600 mt-1 block">
+    <small
+      class="text-red-600 mt-1 group-has-[[data-validation-reason=min]]:block hidden"
+    >
       Must be at least 18 years old
     </small>
 
-    <small x-cloak x-show="maxAge" class="text-red-600 mt-1 block">
+    <small
+      class="text-red-600 mt-1 group-has-[[data-validation-reason=max]]:block hidden"
+    >
       Can't be older than 24 years old
     </small>
   </div>
 
-  <div
-    x-data="{ minLetters: false, maxLetters: false }"
-    @error="
-      minLetters = $valid($event.detail, 'minLength')
-      maxLetters = $valid($event.detail, 'maxLength')
-    "
-  >
+  <div class="group">
     <label for="contactMessage" class="font-medium"> Message </label>
 
     <textarea
@@ -103,19 +94,20 @@ _This example uses Tailwind CSS for styling but that is not mandatory._
       class="rounded w-full mt-1 data-[validation-valid=true]:border-green-500 data-[validation-valid=false]:border-red-500"
     ></textarea>
 
-    <small x-cloak x-show="minLetters" class="text-red-600 mt-1 block">
+    <small
+      class="text-red-600 mt-1 group-has-[[data-validation-reason=minLength]]:block hidden"
+    >
       Must be at least 10 characters
     </small>
 
-    <small x-cloak x-show="maxLetters" class="text-red-600 mt-1 block">
+    <small
+      class="text-red-600 mt-1 group-has-[[data-validation-reason=maxLength]]:block hidden"
+    >
       Can't be more than 50 characters
     </small>
   </div>
 
-  <div
-    x-data="{ isAccepted: false }"
-    @error="isAccepted = $valid($event.detail, 'checked')"
-  >
+  <div class="group">
     <label for="contactTerms" class="inline-flex items-center gap-2">
       <input
         id="contactTerms"
@@ -129,14 +121,22 @@ _This example uses Tailwind CSS for styling but that is not mandatory._
       <span class="font-medium">I accept the terms and conditions</span>
     </label>
 
-    <small x-cloak x-show="isAccepted" class="text-red-600 mt-1 block">
+    <small
+      class="text-red-600 mt-1 group-has-[[data-validation-valid=false]]:block hidden"
+    >
       Must accept
     </small>
   </div>
 
-  <button class="px-5 py-2.5 rounded bg-blue-600 font-medium text-white">
-    Submit
-  </button>
+  <div class="flex justify-end gap-4">
+    <button type="reset" class="px-5 py-2.5 rounded font-medium text-blue-600">
+      Reset
+    </button>
+
+    <button class="px-5 py-2.5 rounded bg-blue-600 font-medium text-white">
+      Submit
+    </button>
+  </div>
 </form>
 ```
 
@@ -162,23 +162,34 @@ Here we are setting up the directive `x-validation` and passing the modifier
 - `min:length.X` (Where "X" is an integer)
 - `max:length.X` (Where "X" is an integer)
 
-#### `@error="required = $valid($event.detail, 'required')"`
-
-Here we have a few things going on.
-
-We're listing for the `@error` event which is emitted once the input has run
-through the validation checks. We're then setting `required` to either
-true/false based on the response from the magic helper `$valid`.
-
-**`$valid`**
-
-This is a magic helper which returns true/false based on the validation status
-of the input. You pass in the `$event.detail` which comes from the `@error`
-event and the validation option, in the example that's `required`.
-
 ### Styling
 
-You could style the inputs like this:
+#### How Error Messages Are Shown
+
+This plugin now relies primarily on CSS, not JavaScript (since v1.2), to show or
+hide error messages. When an input is validated, data attributes such as
+`data-validation-valid` and `data-validation-reason` are set on the input
+element. You can use these attributes in your CSS to control the appearance of
+error messages and input borders.
+
+For example, you can show or hide error messages based on the validation state
+using the `group-has-[[data-validation-reason=...]]` or
+`group-has-[[data-validation-valid=false]]` selectors. This means you do not
+need to write any JavaScript to toggle error messages, just use the appropriate
+CSS selectors.
+
+**Why use `data-validation-reason`?**
+
+The `data-validation-reason` attribute is especially useful for inputs that have
+multiple validation criteria (such as both `min` and `max` length, or a numeric
+range). By targeting specific reasons, you can display a different error message
+for each type of validation failure.
+
+For example, a text input might need to be at least 10 characters but no more
+than 50; using `data-validation-reason`, you can show a unique message for each
+case, improving the user experience.
+
+#### Example CSS
 
 ```css
 [data-validation-valid='false'] {
@@ -188,7 +199,30 @@ You could style the inputs like this:
 [data-validation-valid='true'] {
   border-color: green;
 }
+
+/* Show error message when input is invalid */
+.group:has([data-validation-valid='false']) small {
+  display: block;
+}
+
+/* Hide error message by default */
+.group small {
+  display: none;
+}
+
+/* Show specific error message for a reason */
+.group:has([data-validation-reason='min']) .min-error {
+  display: block;
+}
+
+.group:has([data-validation-reason='max']) .max-error {
+  display: block;
+}
 ```
+
+> **Note:** The example above uses the `:has()` CSS selector, which is supported
+> in all modern browsers. If you need to support older browsers, consider using
+> utility classes or alternative approaches.
 
 ### Stats
 

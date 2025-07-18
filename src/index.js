@@ -19,6 +19,4 @@ export default function (Alpine) {
       })
     }
   )
-
-  Alpine.magic('valid', () => (json, key) => !JSON.parse(json)[key])
 }
