@@ -224,11 +224,9 @@ case, improving the user experience.
 > in all modern browsers. If you need to support older browsers, consider using
 > utility classes or alternative approaches.
 
-
 ### Stats
 
 ![](https://img.shields.io/bundlephobia/min/alpinejs-form-validation)
 ![](https://img.shields.io/npm/v/alpinejs-form-validation)
 ![](https://img.shields.io/npm/dt/alpinejs-form-validation)
 ![](https://img.shields.io/github/license/markmead/alpinejs-form-validation)
-```
