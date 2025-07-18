@@ -223,7 +223,6 @@ case, improving the user experience.
 > in all modern browsers. If you need to support older browsers, consider using
 > utility classes or alternative approaches.
 
-```
 
 ### Stats
 
