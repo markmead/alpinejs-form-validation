@@ -54,7 +54,7 @@ _This example uses Tailwind CSS for styling but that is not required._
     />
 
     <small
-      class="text-red-600 mt-1 hidden group-has-[[data-validation-valid=false]]:block hidden"
+      class="text-red-600 mt-1 hidden group-has-[[data-validation-valid=false]]:block"
     >
       Need a name
     </small>
