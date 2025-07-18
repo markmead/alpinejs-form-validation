@@ -214,6 +214,7 @@ case, improving the user experience.
 .group:has([data-validation-reason='min']) .min-error {
   display: block;
 }
+
 .group:has([data-validation-reason='max']) .max-error {
   display: block;
 }
