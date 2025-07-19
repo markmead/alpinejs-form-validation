@@ -15,7 +15,7 @@ real-time client-side validation with data attributes.
 - ⚡ **Real-time** - Immediate feedback as users type
 - 🔧 **Flexible** - Multiple validation rules per input
 - 📱 **Accessible** - Works with screen readers and keyboard navigation
-- � **Zero dependencies** - Only requires Alpine.js
+- 🚫 **Zero dependencies** - Only requires Alpine.js
 
 ## 📦 Installation
 
