@@ -10,22 +10,36 @@ export function checkInput(
   const getModifierValue = (modKey) => {
     const modIndex = modifiers.indexOf(modKey)
 
-    return modIndex !== -1 ? Number(modifiers[modIndex + 1]) : null
+    if (modIndex === -1 || modIndex + 1 >= modifiers.length) {
+      return null
+    }
+
+    const modValue = Number(modifiers[modIndex + 1])
+
+    return isNaN(modValue) ? null : modValue
   }
 
   const getErrors = evaluateLater(expression)
 
-  // Build validation options object
+  // Build validation options object - only include options with valid values
   const validationOptions = {
     ...(hasModifier('required') && { required: true }),
-    ...(hasModifier('min') && { min: getModifierValue('min') }),
-    ...(hasModifier('max') && { max: getModifierValue('max') }),
-    ...(hasModifier('min:length') && {
-      minLength: getModifierValue('min:length'),
-    }),
-    ...(hasModifier('max:length') && {
-      maxLength: getModifierValue('max:length'),
-    }),
+    ...(hasModifier('min') &&
+      getModifierValue('min') !== null && {
+        min: getModifierValue('min'),
+      }),
+    ...(hasModifier('max') &&
+      getModifierValue('max') !== null && {
+        max: getModifierValue('max'),
+      }),
+    ...(hasModifier('min:length') &&
+      getModifierValue('min:length') !== null && {
+        minLength: getModifierValue('min:length'),
+      }),
+    ...(hasModifier('max:length') &&
+      getModifierValue('max:length') !== null && {
+        maxLength: getModifierValue('max:length'),
+      }),
     ...(hasModifier('checked') && { checked: true }),
   }
 
