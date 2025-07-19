@@ -24,22 +24,22 @@ export function checkInput(
   // Build validation options object - only include options with valid values
   const validationOptions = {
     ...(hasModifier('required') && { required: true }),
-    ...(hasModifier('min') &&
-      getModifierValue('min') !== null && {
-        min: getModifierValue('min'),
-      }),
-    ...(hasModifier('max') &&
-      getModifierValue('max') !== null && {
-        max: getModifierValue('max'),
-      }),
-    ...(hasModifier('min:length') &&
-      getModifierValue('min:length') !== null && {
-        minLength: getModifierValue('min:length'),
-      }),
-    ...(hasModifier('max:length') &&
-      getModifierValue('max:length') !== null && {
-        maxLength: getModifierValue('max:length'),
-      }),
+    ...(hasModifier('min') && (() => {
+      const minValue = getModifierValue('min');
+      return minValue !== null ? { min: minValue } : null;
+    })()),
+    ...(hasModifier('max') && (() => {
+      const maxValue = getModifierValue('max');
+      return maxValue !== null ? { max: maxValue } : null;
+    })()),
+    ...(hasModifier('min:length') && (() => {
+      const minLengthValue = getModifierValue('min:length');
+      return minLengthValue !== null ? { minLength: minLengthValue } : null;
+    })()),
+    ...(hasModifier('max:length') && (() => {
+      const maxLengthValue = getModifierValue('max:length');
+      return maxLengthValue !== null ? { maxLength: maxLengthValue } : null;
+    })()),
     ...(hasModifier('checked') && { checked: true }),
   }
 
