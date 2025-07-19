@@ -70,16 +70,13 @@ export function checkInput(
     }
 
     // Run only applicable validations
-    const validationStatus = Object.keys(validationOptions).reduce(
-      (optionStatus, optionKey) => {
-        if (validationChecks[optionKey]) {
-          optionStatus[optionKey] = validationChecks[optionKey]()
-        }
+    const validationStatus = {}
 
-        return optionStatus
-      },
-      {}
-    )
+    for (const [optionKey] of Object.entries(validationOptions)) {
+      if (validationChecks[optionKey]) {
+        validationStatus[optionKey] = validationChecks[optionKey]()
+      }
+    }
 
     const isValid = Object.values(validationStatus).every(Boolean)
     const errorKey = Object.keys(validationStatus).find(
