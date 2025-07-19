@@ -19,7 +19,7 @@ export function checkInput(
     return isNaN(modValue) ? null : modValue
   }
 
-  const buildValidationOption = (modKey, optionKey) => {
+  const getValidationOptionWithValue = (modKey, optionKey) => {
     if (!hasModifier(modKey)) {
       return null
     }
