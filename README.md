@@ -1,9 +1,9 @@
 # Alpine JS Form Validation
 
-![](https://img.shields.io/npm/v/alpinejs-form-validation)(https://www.npmjs.com/package/alpinejs-form-validation)
-![](https://img.shields.io/bundlephobia/min/alpinejs-form-validation)(https://bundlephobia.com/package/alpinejs-form-validation)
-![](https://img.shields.io/npm/dt/alpinejs-form-validation)(https://www.npmjs.com/package/alpinejs-form-validation)
-![](https://img.shields.io/github/license/markmead/alpinejs-form-validation)(https://github.com/markmead/alpinejs-form-validation/blob/main/LICENSE)
+[![](https://img.shields.io/npm/v/alpinejs-form-validation)](https://www.npmjs.com/package/alpinejs-form-validation)
+[![](https://img.shields.io/bundlephobia/min/alpinejs-form-validation)](https://bundlephobia.com/package/alpinejs-form-validation)
+[![](https://img.shields.io/npm/dt/alpinejs-form-validation)](https://www.npmjs.com/package/alpinejs-form-validation)
+[![](https://img.shields.io/github/license/markmead/alpinejs-form-validation)](https://github.com/markmead/alpinejs-form-validation/blob/main/LICENSE)
 
 A lightweight, CSS-driven form validation plugin for Alpine.js that provides
 real-time client-side validation with data attributes.
