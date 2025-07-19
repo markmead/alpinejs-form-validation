@@ -5,48 +5,32 @@ export function checkInput(
   evaluateLater,
   ignoreDirty = false
 ) {
-  const getModifier = (modKey) =>
-    modifiers.find((modItem) => modItem === modKey) ?? false
+  const hasModifier = (modKey) => modifiers.includes(modKey)
+
+  const getModifierValue = (modKey) => {
+    const modIndex = modifiers.indexOf(modKey)
+
+    return modIndex !== -1 ? Number(modifiers[modIndex + 1]) : null
+  }
 
   const getErrors = evaluateLater(expression)
 
-  let validationOptions = {}
-
-  if (getModifier('required')) {
-    validationOptions.required = true
-  }
-
-  if (getModifier('min')) {
-    const modifierIndex = modifiers.indexOf(getModifier('min'))
-
-    validationOptions.min = Number(modifiers[modifierIndex + 1])
-  }
-
-  if (getModifier('max')) {
-    const modifierIndex = modifiers.indexOf(getModifier('max'))
-
-    validationOptions.max = Number(modifiers[modifierIndex + 1])
-  }
-
-  if (getModifier('min:length')) {
-    const modifierIndex = modifiers.indexOf(getModifier('min:length'))
-
-    validationOptions.minLength = Number(modifiers[modifierIndex + 1])
-  }
-
-  if (getModifier('max:length')) {
-    const modifierIndex = modifiers.indexOf(getModifier('max:length'))
-
-    validationOptions.maxLength = Number(modifiers[modifierIndex + 1])
-  }
-
-  if (getModifier('checked')) {
-    validationOptions.checked = true
+  // Build validation options object
+  const validationOptions = {
+    ...(hasModifier('required') && { required: true }),
+    ...(hasModifier('min') && { min: getModifierValue('min') }),
+    ...(hasModifier('max') && { max: getModifierValue('max') }),
+    ...(hasModifier('min:length') && {
+      minLength: getModifierValue('min:length'),
+    }),
+    ...(hasModifier('max:length') && {
+      maxLength: getModifierValue('max:length'),
+    }),
+    ...(hasModifier('checked') && { checked: true }),
   }
 
   getErrors((inputValue) => {
-    // We don't check validation if there is no input value,
-    // or if the input has not been interacted with
+    // Skip validation if no input value and element hasn't been interacted with
     if (
       !ignoreDirty &&
       !inputValue &&
@@ -55,46 +39,46 @@ export function checkInput(
       return
     }
 
-    let validationStatus = {}
-
-    if (getModifier('required')) {
-      validationStatus.required = !!inputValue
+    // Validation logic mapping
+    const validationChecks = {
+      required: () => !!inputValue,
+      min: () => inputValue >= validationOptions.min,
+      max: () => inputValue <= validationOptions.max,
+      minLength: () => inputValue.length >= validationOptions.minLength,
+      maxLength: () => inputValue.length <= validationOptions.maxLength,
+      checked: () => !!inputValue,
     }
 
-    if (getModifier('min')) {
-      validationStatus.min = inputValue >= validationOptions.min
-    }
+    // Run only applicable validations
+    const validationStatus = Object.keys(validationOptions).reduce(
+      (optionStatus, optionKey) => {
+        if (validationChecks[optionKey]) {
+          optionStatus[optionKey] = validationChecks[optionKey]()
+        }
 
-    if (getModifier('max')) {
-      validationStatus.max = inputValue <= validationOptions.max
-    }
-
-    if (getModifier('min:length')) {
-      validationStatus.minLength =
-        inputValue.length >= validationOptions.minLength
-    }
-
-    if (getModifier('max:length')) {
-      validationStatus.maxLength =
-        inputValue.length <= validationOptions.maxLength
-    }
-
-    if (getModifier('checked')) {
-      validationStatus.checked = !!inputValue
-    }
-
-    const isValid = Object.values(validationStatus).every((isValid) => isValid)
-    const errorKey = Object.keys(validationStatus).find(
-      (validationKey) => validationStatus[validationKey] === false
+        return optionStatus
+      },
+      {}
     )
 
-    el.setAttribute('data-validation-dirty', true)
-    el.setAttribute('data-validation-valid', isValid)
-    el.setAttribute('data-validation-reason', errorKey || '')
-    el.setAttribute('data-validation-status', JSON.stringify(validationStatus))
-    el.setAttribute(
-      'data-validation-options',
-      JSON.stringify(validationOptions)
+    const isValid = Object.values(validationStatus).every(Boolean)
+    const errorKey = Object.keys(validationStatus).find(
+      (statusKey) => !validationStatus[statusKey]
+    )
+
+    // Set data attributes
+    const inputAttributes = {
+      'data-validation-dirty': true,
+      'data-validation-valid': isValid,
+      'data-validation-reason': errorKey || '',
+      'data-validation-status': JSON.stringify(validationStatus),
+      'data-validation-options': JSON.stringify(validationOptions),
+    }
+
+    Object.entries(inputAttributes).forEach(
+      ([attributeName, attributeValue]) => {
+        el.setAttribute(attributeName, attributeValue)
+      }
     )
   })
 }

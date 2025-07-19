@@ -1,8 +1,23 @@
 # Alpine JS Form Validation
 
-Add client side form validation with Alpine JS 🎉
+![](https://img.shields.io/npm/v/alpinejs-form-validation)(https://www.npmjs.com/package/alpinejs-form-validation)
+![](https://img.shields.io/bundlephobia/min/alpinejs-form-validation)(https://bundlephobia.com/package/alpinejs-form-validation)
+![](https://img.shields.io/npm/dt/alpinejs-form-validation)(https://www.npmjs.com/package/alpinejs-form-validation)
+![](https://img.shields.io/github/license/markmead/alpinejs-form-validation)(https://github.com/markmead/alpinejs-form-validation/blob/main/LICENSE)
 
-## Install
+A lightweight, CSS-driven form validation plugin for Alpine.js that provides
+real-time client-side validation with data attributes.
+
+## ✨ Features
+
+- 🪶 **Lightweight** - Minimal overhead, maximum performance
+- 🎨 **CSS-driven** - Style validation states with data attributes
+- ⚡ **Real-time** - Immediate feedback as users type
+- 🔧 **Flexible** - Multiple validation rules per input
+- 📱 **Accessible** - Works with screen readers and keyboard navigation
+- � **Zero dependencies** - Only requires Alpine.js
+
+## 📦 Installation
 
 ### With a CDN
 
@@ -32,7 +47,48 @@ Alpine.plugin(validation)
 Alpine.start()
 ```
 
-## Example
+## 🚀 Quick Start
+
+1. Add the validation directive to your inputs with `x-validation`
+2. Use modifiers to specify validation rules (e.g., `x-validation.required`)
+3. Trigger validation with `$dispatch('validate')`
+4. Style validation states using data attributes
+
+## 📋 Validation Rules
+
+| Rule           | Example                       | Description              |
+| -------------- | ----------------------------- | ------------------------ |
+| `required`     | `x-validation.required`       | Field must have a value  |
+| `min.X`        | `x-validation.min.18`         | Numeric minimum value    |
+| `max.X`        | `x-validation.max.65`         | Numeric maximum value    |
+| `min:length.X` | `x-validation.min:length.5`   | Minimum string length    |
+| `max:length.X` | `x-validation.max:length.100` | Maximum string length    |
+| `checked`      | `x-validation.checked`        | Checkbox must be checked |
+
+### Combining Rules
+
+You can combine multiple validation rules on a single input:
+
+```html
+<input x-model="age" x-validation.required.min.18.max.65="age" />
+
+<textarea
+  x-model="message"
+  x-validation.required.min:length.10.max:length.500="message"
+></textarea>
+```
+
+## 🎨 Data Attributes
+
+The plugin automatically sets these data attributes on validated elements:
+
+- `data-validation-valid` - `"true"` or `"false"`
+- `data-validation-reason` - The specific validation rule that failed
+- `data-validation-dirty` - `"true"` once the user has interacted with the field
+- `data-validation-status` - JSON object with all validation results
+- `data-validation-options` - JSON object with all validation rules
+
+## 💡 Complete Example
 
 _This example uses Tailwind CSS for styling but that is not required._
 
@@ -140,56 +196,124 @@ _This example uses Tailwind CSS for styling but that is not required._
 </form>
 ```
 
-### Functionality
+## 🎯 How It Works
 
-Breaking down the example we have the following.
+### Triggering Validation
 
 #### `$dispatch('validate')`
 
-Emitting the event `validate` will trigger each input within the element that
-the event was emitted from to run through the validation checks.
+Dispatch the `validate` event to trigger validation for all inputs within the
+target element:
 
-#### `x-validation.required="contactName"`
+```html
+<!-- Validate entire form -->
+<form @submit.prevent="$dispatch('validate')"> </form>
+```
 
-Here we are setting up the directive `x-validation` and passing the modifier
-`required` which says, the value of `contactName` must exist to pass validation.
+### Real-time Validation
 
-**Validation Options**
+Validation automatically runs as users interact with inputs. The plugin tracks
+whether an input is "dirty" (has been interacted with) to avoid showing errors
+prematurely.
 
-- `required`
-- `min.X` (Where "X" is an integer)
-- `max.X` (Where "X" is an integer)
-- `min:length.X` (Where "X" is an integer)
-- `max:length.X` (Where "X" is an integer)
+## 🎨 Styling with CSS
 
-### Styling
+### Basic Styling
 
-#### How Error Messages Are Shown
+```css
+/* Valid inputs */
+[data-validation-valid='true'] {
+  border-color: #10b981;
+}
 
-This plugin now relies primarily on CSS, not JavaScript (since v1.2), to show or
-hide error messages. When an input is validated, data attributes such as
-`data-validation-valid` and `data-validation-reason` are set on the input
-element. You can use these attributes in your CSS to control the appearance of
-error messages and input borders.
+/* Invalid inputs */
+[data-validation-valid='false'] {
+  border-color: #ef4444;
+}
 
-For example, you can show or hide error messages based on the validation state
-using the `group-has-[[data-validation-reason=...]]` or
-`group-has-[[data-validation-valid=false]]` selectors. This means you do not
-need to write any JavaScript to toggle error messages, just use the appropriate
-CSS selectors.
+/* Error messages (hidden by default) */
+.error-message {
+  display: none;
+  color: #ef4444;
+}
+
+/* Show error when parent contains invalid input */
+.form-group:has([data-validation-valid='false']) .error-message {
+  display: block;
+}
+```
+
+### Specific Error Messages
+
+Target specific validation failures for tailored messaging:
+
+```css
+/* Show specific error for minimum value */
+.form-group:has([data-validation-reason='min']) .min-error {
+  display: block;
+}
+
+/* Show specific error for required field */
+.form-group:has([data-validation-reason='required']) .required-error {
+  display: block;
+}
+```
+
+### Advanced Example with Tailwind CSS
+
+```html
+<div class="group">
+  <input
+    x-model="email"
+    x-validation.required.min:length.5="email"
+    class="w-full border rounded px-3 py-2 data-[validation-valid=true]:border-green-500 data-[validation-valid=false]:border-red-500"
+  />
+
+  <!-- Different error messages for different validation failures -->
+  <small
+    class="text-red-600 mt-1 hidden group-has-[[data-validation-reason=required]]:block"
+  >
+    Email is required
+  </small>
+
+  <small
+    class="text-red-600 mt-1 hidden group-has-[[data-validation-reason=minLength]]:block"
+  >
+    Email must be at least 5 characters
+  </small>
+</div>
+```
+
+## 🌐 Browser Support
+
+This plugin uses modern CSS features like `:has()` selector in the examples. For
+broader browser support, consider:
+
+- Using JavaScript to toggle classes instead of CSS `:has()`
+- Providing fallback styles for older browsers
+- Using utility CSS frameworks that handle browser compatibility
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request. For major
+changes, please open an issue first to discuss what you would like to change.
+
+## 🔧 Advanced Usage
+
+### How Error Messages Are Shown
+
+This plugin relies primarily on CSS to show or hide error messages. When an
+input is validated, data attributes such as `data-validation-valid` and
+`data-validation-reason` are set on the input element.
 
 **Why use `data-validation-reason`?**
 
-The `data-validation-reason` attribute is especially useful for inputs that have
-multiple validation criteria (such as both `min` and `max` length, or a numeric
-range). By targeting specific reasons, you can display a different error message
-for each type of validation failure.
+The `data-validation-reason` attribute is useful for inputs with multiple
+validation criteria. By targeting specific reasons, you can display different
+error messages for each type of validation failure, improving the user
+experience.
 
-For example, a text input might need to be at least 10 characters but no more
-than 50; using `data-validation-reason`, you can show a unique message for each
-case, improving the user experience.
-
-#### Example CSS
+### Example CSS
 
 ```css
 [data-validation-valid='false'] {
@@ -200,33 +324,18 @@ case, improving the user experience.
   border-color: green;
 }
 
-/* Show error message when input is invalid */
 .group:has([data-validation-valid='false']) small {
   display: block;
 }
 
-/* Hide error message by default */
 .group small {
   display: none;
 }
 
-/* Show specific error message for a reason */
 .group:has([data-validation-reason='min']) .min-error {
-  display: block;
-}
-
-.group:has([data-validation-reason='max']) .max-error {
   display: block;
 }
 ```
 
-> **Note:** The example above uses the `:has()` CSS selector, which is supported
-> in all modern browsers. If you need to support older browsers, consider using
-> utility classes or alternative approaches.
-
-### Stats
-
-![](https://img.shields.io/bundlephobia/min/alpinejs-form-validation)
-![](https://img.shields.io/npm/v/alpinejs-form-validation)
-![](https://img.shields.io/npm/dt/alpinejs-form-validation)
-![](https://img.shields.io/github/license/markmead/alpinejs-form-validation)
+> **Note:** The `:has()` CSS selector is supported in all modern browsers. For
+> older browser support, consider alternative approaches.

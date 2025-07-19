@@ -1,19 +1,32 @@
 {
   "name": "alpinejs-form-validation",
-  "version": "1.2.0",
-  "description": "Adds client side form/input validation powered by Alpine JS ✅",
+  "version": "1.2.1",
+  "description": "Lightweight, CSS-driven form validation plugin for Alpine.js with real-time validation and data attributes",
   "keywords": [
-    "Alpine",
-    "Alpine JS",
-    "Alpine JS Plugins",
-    "Alpine JS Form Validation",
-    "JavaScript Validation",
-    "Form Validation"
+    "alpinejs",
+    "form-validation",
+    "css-validation",
+    "real-time",
+    "lightweight"
   ],
   "author": "Mark Mead",
   "license": "MIT",
+  "homepage": "https://github.com/markmead/alpinejs-form-validation#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/markmead/alpinejs-form-validation.git"
+  },
+  "bugs": {
+    "url": "https://github.com/markmead/alpinejs-form-validation/issues"
+  },
+  "main": "dist/validation.esm.js",
   "module": "dist/validation.esm.js",
   "unpkg": "dist/validation.min.js",
+  "files": [
+    "dist/",
+    "src/",
+    "builds/"
+  ],
   "scripts": {
     "build": "node scripts/build.js"
   },
