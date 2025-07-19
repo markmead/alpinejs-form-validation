@@ -1,6 +1,7 @@
 {
   "name": "alpinejs-form-validation",
   "version": "1.2.1",
+  "type": "module",
   "description": "Lightweight, CSS-driven form validation plugin for Alpine.js with real-time validation and data attributes",
   "keywords": [
     "alpinejs",
@@ -28,9 +29,13 @@
     "builds/"
   ],
   "scripts": {
-    "build": "node scripts/build.js"
+    "build": "node scripts/build.js",
+    "lint": "eslint . --fix",
+    "prebuild": "npm run lint"
   },
   "devDependencies": {
-    "esbuild": "^0.25.0"
+    "@eslint/js": "^9.31.0",
+    "esbuild": "^0.25.0",
+    "eslint": "^9.31.0"
   }
 }
