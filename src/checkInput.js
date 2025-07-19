@@ -21,27 +21,22 @@ export function checkInput(
 
   const getErrors = evaluateLater(expression)
 
+  // Helper function to build validation options
+  const buildValidationOption = (modKey, optionKey) => {
+    if (!hasModifier(modKey)) return null;
+    const modValue = getModifierValue(modKey);
+    return modValue !== null ? { [optionKey]: modValue } : null;
+  };
+
   // Build validation options object - only include options with valid values
   const validationOptions = {
     ...(hasModifier('required') && { required: true }),
-    ...(hasModifier('min') && (() => {
-      const minValue = getModifierValue('min');
-      return minValue !== null ? { min: minValue } : null;
-    })()),
-    ...(hasModifier('max') && (() => {
-      const maxValue = getModifierValue('max');
-      return maxValue !== null ? { max: maxValue } : null;
-    })()),
-    ...(hasModifier('min:length') && (() => {
-      const minLengthValue = getModifierValue('min:length');
-      return minLengthValue !== null ? { minLength: minLengthValue } : null;
-    })()),
-    ...(hasModifier('max:length') && (() => {
-      const maxLengthValue = getModifierValue('max:length');
-      return maxLengthValue !== null ? { maxLength: maxLengthValue } : null;
-    })()),
+    ...buildValidationOption('min', 'min'),
+    ...buildValidationOption('max', 'max'),
+    ...buildValidationOption('min:length', 'minLength'),
+    ...buildValidationOption('max:length', 'maxLength'),
     ...(hasModifier('checked') && { checked: true }),
-  }
+  };
 
   getErrors((inputValue) => {
     // Skip validation if no input value and element hasn't been interacted with
