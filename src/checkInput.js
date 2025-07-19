@@ -34,10 +34,10 @@ export function checkInput(
   // Build validation options object - only include options with valid values
   const validationOptions = {
     ...(hasModifier('required') && { required: true }),
-    ...buildValidationOption('min', 'min'),
-    ...buildValidationOption('max', 'max'),
-    ...buildValidationOption('min:length', 'minLength'),
-    ...buildValidationOption('max:length', 'maxLength'),
+    ...getValidationOptionWithValue('min', 'min'),
+    ...getValidationOptionWithValue('max', 'max'),
+    ...getValidationOptionWithValue('min:length', 'minLength'),
+    ...getValidationOptionWithValue('max:length', 'maxLength'),
     ...(hasModifier('checked') && { checked: true }),
   }
 
@@ -56,10 +56,12 @@ export function checkInput(
       required: () => !!inputValue,
       min: () => {
         const numericValue = Number(inputValue)
+
         return !isNaN(numericValue) && numericValue >= validationOptions.min
       },
       max: () => {
         const numericValue = Number(inputValue)
+
         return !isNaN(numericValue) && numericValue <= validationOptions.max
       },
       minLength: () => inputValue.length >= validationOptions.minLength,
