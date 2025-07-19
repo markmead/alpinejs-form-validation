@@ -56,8 +56,14 @@ export function checkInput(
     // Validation logic mapping
     const validationChecks = {
       required: () => !!inputValue,
-      min: () => inputValue >= validationOptions.min,
-      max: () => inputValue <= validationOptions.max,
+      min: () => {
+        const numericValue = Number(inputValue);
+        return !isNaN(numericValue) && numericValue >= validationOptions.min;
+      },
+      max: () => {
+        const numericValue = Number(inputValue);
+        return !isNaN(numericValue) && numericValue <= validationOptions.max;
+      },
       minLength: () => inputValue.length >= validationOptions.minLength,
       maxLength: () => inputValue.length <= validationOptions.maxLength,
       checked: () => !!inputValue,
