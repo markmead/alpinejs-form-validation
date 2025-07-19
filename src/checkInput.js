@@ -19,14 +19,17 @@ export function checkInput(
     return isNaN(modValue) ? null : modValue
   }
 
-  const getErrors = evaluateLater(expression)
-
-  // Helper function to build validation options
   const buildValidationOption = (modKey, optionKey) => {
-    if (!hasModifier(modKey)) return null;
-    const modValue = getModifierValue(modKey);
-    return modValue !== null ? { [optionKey]: modValue } : null;
-  };
+    if (!hasModifier(modKey)) {
+      return null
+    }
+
+    const modValue = getModifierValue(modKey)
+
+    return modValue !== null ? { [optionKey]: modValue } : null
+  }
+
+  const getErrors = evaluateLater(expression)
 
   // Build validation options object - only include options with valid values
   const validationOptions = {
@@ -36,7 +39,7 @@ export function checkInput(
     ...buildValidationOption('min:length', 'minLength'),
     ...buildValidationOption('max:length', 'maxLength'),
     ...(hasModifier('checked') && { checked: true }),
-  };
+  }
 
   getErrors((inputValue) => {
     // Skip validation if no input value and element hasn't been interacted with
@@ -52,12 +55,12 @@ export function checkInput(
     const validationChecks = {
       required: () => !!inputValue,
       min: () => {
-        const numericValue = Number(inputValue);
-        return !isNaN(numericValue) && numericValue >= validationOptions.min;
+        const numericValue = Number(inputValue)
+        return !isNaN(numericValue) && numericValue >= validationOptions.min
       },
       max: () => {
-        const numericValue = Number(inputValue);
-        return !isNaN(numericValue) && numericValue <= validationOptions.max;
+        const numericValue = Number(inputValue)
+        return !isNaN(numericValue) && numericValue <= validationOptions.max
       },
       minLength: () => inputValue.length >= validationOptions.minLength,
       maxLength: () => inputValue.length <= validationOptions.maxLength,
