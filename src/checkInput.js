@@ -5,48 +5,44 @@ export function checkInput(
   evaluateLater,
   ignoreDirty = false
 ) {
-  const getModifier = (modKey) =>
-    modifiers.find((modItem) => modItem === modKey) ?? false
+  const hasModifier = (modKey) => modifiers.includes(modKey)
+
+  const getModifierValue = (modKey) => {
+    const modIndex = modifiers.indexOf(modKey)
+
+    if (modIndex === -1 || modIndex + 1 >= modifiers.length) {
+      return null
+    }
+
+    const modValue = Number(modifiers[modIndex + 1])
+
+    return isNaN(modValue) ? null : modValue
+  }
+
+  const getValidationOptionWithValue = (modKey, optionKey) => {
+    if (!hasModifier(modKey)) {
+      return null
+    }
+
+    const modValue = getModifierValue(modKey)
+
+    return modValue !== null ? { [optionKey]: modValue } : null
+  }
 
   const getErrors = evaluateLater(expression)
 
-  let validationOptions = {}
-
-  if (getModifier('required')) {
-    validationOptions.required = true
-  }
-
-  if (getModifier('min')) {
-    const modifierIndex = modifiers.indexOf(getModifier('min'))
-
-    validationOptions.min = Number(modifiers[modifierIndex + 1])
-  }
-
-  if (getModifier('max')) {
-    const modifierIndex = modifiers.indexOf(getModifier('max'))
-
-    validationOptions.max = Number(modifiers[modifierIndex + 1])
-  }
-
-  if (getModifier('min:length')) {
-    const modifierIndex = modifiers.indexOf(getModifier('min:length'))
-
-    validationOptions.minLength = Number(modifiers[modifierIndex + 1])
-  }
-
-  if (getModifier('max:length')) {
-    const modifierIndex = modifiers.indexOf(getModifier('max:length'))
-
-    validationOptions.maxLength = Number(modifiers[modifierIndex + 1])
-  }
-
-  if (getModifier('checked')) {
-    validationOptions.checked = true
+  // Build validation options object - only include options with valid values
+  const validationOptions = {
+    ...(hasModifier('required') && { required: true }),
+    ...getValidationOptionWithValue('min', 'min'),
+    ...getValidationOptionWithValue('max', 'max'),
+    ...getValidationOptionWithValue('min:length', 'minLength'),
+    ...getValidationOptionWithValue('max:length', 'maxLength'),
+    ...(hasModifier('checked') && { checked: true }),
   }
 
   getErrors((inputValue) => {
-    // We don't check validation if there is no input value,
-    // or if the input has not been interacted with
+    // Skip validation if no input value and element hasn't been interacted with
     if (
       !ignoreDirty &&
       !inputValue &&
@@ -55,46 +51,51 @@ export function checkInput(
       return
     }
 
-    let validationStatus = {}
+    // Validation logic mapping
+    const validationChecks = {
+      required: () => !!inputValue,
+      min: () => {
+        const numericValue = Number(inputValue)
 
-    if (getModifier('required')) {
-      validationStatus.required = !!inputValue
+        return !isNaN(numericValue) && numericValue >= validationOptions.min
+      },
+      max: () => {
+        const numericValue = Number(inputValue)
+
+        return !isNaN(numericValue) && numericValue <= validationOptions.max
+      },
+      minLength: () => inputValue.length >= validationOptions.minLength,
+      maxLength: () => inputValue.length <= validationOptions.maxLength,
+      checked: () => !!inputValue,
     }
 
-    if (getModifier('min')) {
-      validationStatus.min = inputValue >= validationOptions.min
+    // Run only applicable validations
+    const validationStatus = {}
+
+    for (const [optionKey] of Object.entries(validationOptions)) {
+      if (validationChecks[optionKey]) {
+        validationStatus[optionKey] = validationChecks[optionKey]()
+      }
     }
 
-    if (getModifier('max')) {
-      validationStatus.max = inputValue <= validationOptions.max
-    }
-
-    if (getModifier('min:length')) {
-      validationStatus.minLength =
-        inputValue.length >= validationOptions.minLength
-    }
-
-    if (getModifier('max:length')) {
-      validationStatus.maxLength =
-        inputValue.length <= validationOptions.maxLength
-    }
-
-    if (getModifier('checked')) {
-      validationStatus.checked = !!inputValue
-    }
-
-    const isValid = Object.values(validationStatus).every((isValid) => isValid)
+    const isValid = Object.values(validationStatus).every(Boolean)
     const errorKey = Object.keys(validationStatus).find(
-      (validationKey) => validationStatus[validationKey] === false
+      (statusKey) => !validationStatus[statusKey]
     )
 
-    el.setAttribute('data-validation-dirty', true)
-    el.setAttribute('data-validation-valid', isValid)
-    el.setAttribute('data-validation-reason', errorKey || '')
-    el.setAttribute('data-validation-status', JSON.stringify(validationStatus))
-    el.setAttribute(
-      'data-validation-options',
-      JSON.stringify(validationOptions)
+    // Set data attributes
+    const inputAttributes = {
+      'data-validation-dirty': true,
+      'data-validation-valid': isValid,
+      'data-validation-reason': errorKey || '',
+      'data-validation-status': JSON.stringify(validationStatus),
+      'data-validation-options': JSON.stringify(validationOptions),
+    }
+
+    Object.entries(inputAttributes).forEach(
+      ([attributeName, attributeValue]) => {
+        el.setAttribute(attributeName, attributeValue)
+      }
     )
   })
 }
