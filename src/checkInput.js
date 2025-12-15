@@ -32,20 +32,24 @@ export function checkInput(
   const getErrors = evaluateLater(expression)
 
   // Build validation options object - only include options with valid values
-  const validationOptions = {
-    ...(hasModifier('required') && { required: true }),
-    ...getValidationOptionWithValue('min', 'min'),
-    ...getValidationOptionWithValue('max', 'max'),
-    ...getValidationOptionWithValue('min:length', 'minLength'),
-    ...getValidationOptionWithValue('max:length', 'maxLength'),
-    ...(hasModifier('checked') && { checked: true }),
-  }
+  const validationOptions = Object.fromEntries(
+    Object.entries({
+      ...(hasModifier('required') && { required: true }),
+      ...getValidationOptionWithValue('min', 'min'),
+      ...getValidationOptionWithValue('max', 'max'),
+      ...getValidationOptionWithValue('min:length', 'minLength'),
+      ...getValidationOptionWithValue('max:length', 'maxLength'),
+      ...(hasModifier('checked') && { checked: true }),
+    }).filter(
+      ([, optionValue]) => optionValue !== null && optionValue !== undefined
+    )
+  )
 
   getErrors((inputValue) => {
     // Skip validation if no input value and element hasn't been interacted with
     if (
       !ignoreDirty &&
-      !inputValue &&
+      (inputValue === null || inputValue === undefined || inputValue === '') &&
       !el.getAttribute('data-validation-dirty')
     ) {
       return
@@ -64,8 +68,16 @@ export function checkInput(
 
         return !isNaN(numericValue) && numericValue <= validationOptions.max
       },
-      minLength: () => inputValue.length >= validationOptions.minLength,
-      maxLength: () => inputValue.length <= validationOptions.maxLength,
+      minLength: () => {
+        const stringValue = String(inputValue || '')
+
+        return stringValue.length >= validationOptions.minLength
+      },
+      maxLength: () => {
+        const stringValue = String(inputValue || '')
+
+        return stringValue.length <= validationOptions.maxLength
+      },
       checked: () => !!inputValue,
     }
 

@@ -6,7 +6,7 @@ export default function (Alpine) {
     (el, { modifiers, expression }, { evaluateLater, effect }) => {
       effect(() => checkInput(el, modifiers, expression, evaluateLater))
 
-      document.addEventListener('validate', (validateEvent) => {
+      const handleValidate = (validateEvent) => {
         const { target } = validateEvent
 
         if (!target.contains(el)) {
@@ -14,17 +14,16 @@ export default function (Alpine) {
         }
 
         checkInput(el, modifiers, expression, evaluateLater, true)
-      })
+      }
 
       // Clear validation data attributes on form reset
-      document.addEventListener('reset', (resetEvent) => {
+      const handleReset = (resetEvent) => {
         const { target } = resetEvent
 
         if (!target.contains(el)) {
           return
         }
 
-        // Remove all validation data attributes
         const validationAttributes = [
           'data-validation-dirty',
           'data-validation-valid',
@@ -36,7 +35,15 @@ export default function (Alpine) {
         validationAttributes.forEach((htmlAttribute) =>
           el.removeAttribute(htmlAttribute)
         )
-      })
+      }
+
+      document.addEventListener('validate', handleValidate)
+      document.addEventListener('reset', handleReset)
+
+      return () => {
+        document.removeEventListener('validate', handleValidate)
+        document.removeEventListener('reset', handleReset)
+      }
     }
   )
 }
